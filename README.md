@@ -18,7 +18,7 @@ Features:
     - For middlemans allow them to create/edit their posts
       
 #Tech use:
- - HTML + CSS + Javascript
+ - Typescript + CSS + Javascript
 Authencation:
  - JWT
  - Refresh Token
