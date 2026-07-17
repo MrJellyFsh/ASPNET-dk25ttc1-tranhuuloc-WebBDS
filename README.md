@@ -1,7 +1,7 @@
 # ASPNET-dk25ttc1-tranhuuloc-WebBDS
 This Website i create to manage and view residential properties around Ho Chi Minh City, VietNam
 
-Features:
+Planned Features:
  1. User
     - Register/Login Account
     - Profile management
@@ -18,11 +18,7 @@ Features:
     - For middlemans allow them to create/edit their posts
       
 #Tech use:
- - Typescript + CSS + Javascript
-Authencation:
- - JWT
- - Refresh Token
- - Bcrypt
+ - Typescript
 Storage:
  - SQL + Cloudinary
 
