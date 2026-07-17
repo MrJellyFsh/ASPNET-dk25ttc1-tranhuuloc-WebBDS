@@ -25,6 +25,7 @@ Tech use:
  - NextJS
  - BcryptJS (pass sys)
  - AuthJS JWT
+ - Prisma
 Storage:
  - SQL + Cloudinary
 
