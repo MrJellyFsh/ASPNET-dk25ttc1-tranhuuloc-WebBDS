@@ -1,0 +1,88 @@
+@using NhaTot.Models.Enums
+@model NhaTot.ViewModels.PropertyDetailViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var vi = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<section class="page-heading property-detail-heading">
+    <div class="container">
+        <p class="eyebrow">@(Model.Purpose == ListingPurpose.Sale ? "CẦN BÁN" : "CHO THUÊ") · @Model.PropertyTypeName</p>
+        <h1>@Model.Title</h1>
+        <p>@Model.DistrictName, @Model.ProvinceName@(string.IsNullOrWhiteSpace(Model.ApproximateLocation) ? string.Empty : $" · {Model.ApproximateLocation}")</p>
+    </div>
+</section>
+
+<div class="container property-detail">
+    @if (TempData["SuccessMessage"] is string successMessage) { <div class="alert alert-success" role="alert">@successMessage</div> }
+    @if (TempData["ErrorMessage"] is string errorMessage) { <div class="alert alert-warning" role="alert">@errorMessage</div> }
+
+    <div class="property-detail__layout">
+        <div>
+            <section class="detail-gallery" aria-label="Ảnh bất động sản">
+                @if (Model.Images.Count == 0)
+                {
+                    <div class="detail-gallery__empty" aria-hidden="true">⌂</div>
+                }
+                else
+                {
+                    @foreach (var image in Model.Images)
+                    {
+                        <img src="@image.FilePath" alt="@(image.AltText ?? Model.Title)" loading="lazy" />
+                    }
+                }
+            </section>
+            <section class="detail-section">
+                <p class="detail-price">@Model.Price.ToString("N0", vi) đ</p>
+                <div class="detail-facts">
+                    <span>@Model.AreaSquareMeters.ToString("N0", vi) m²</span>
+                    @if (Model.Bedrooms.HasValue) { <span>@Model.Bedrooms phòng ngủ</span> }
+                    @if (Model.Bathrooms.HasValue) { <span>@Model.Bathrooms phòng tắm</span> }
+                </div>
+            </section>
+            <section class="detail-section">
+                <h2>Mô tả</h2>
+                <p class="detail-description">@Model.Description</p>
+            </section>
+            @if (Model.Amenities.Count > 0)
+            {
+                <section class="detail-section">
+                    <h2>Tiện ích</h2>
+                    <ul class="amenity-list">@foreach (var amenity in Model.Amenities) { <li>@amenity</li> }</ul>
+                </section>
+            }
+        </div>
+        <aside class="detail-sidebar">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-action="ToggleFavorite" asp-route-slug="@Model.Slug" method="post" class="mb-3">
+                    <button class="btn @(Model.IsFavorite ? "btn-outline-primary" : "btn-primary") w-100" type="submit">@(Model.IsFavorite ? "Bỏ lưu tin" : "Lưu tin")</button>
+                </form>
+                <form asp-action="Contact" asp-route-slug="@Model.Slug" method="post" class="contact-form">
+                    <h2>Gửi yêu cầu liên hệ</h2>
+                    <p>Thông tin của bạn sẽ được chuyển đến người đăng tin.</p>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <label asp-for="ContactRequest.FullName"></label><input asp-for="ContactRequest.FullName" autocomplete="name" />
+                    <span asp-validation-for="ContactRequest.FullName" class="text-danger"></span>
+                    <label asp-for="ContactRequest.PhoneNumber"></label><input asp-for="ContactRequest.PhoneNumber" autocomplete="tel" />
+                    <span asp-validation-for="ContactRequest.PhoneNumber" class="text-danger"></span>
+                    <label asp-for="ContactRequest.Email"></label><input asp-for="ContactRequest.Email" autocomplete="email" />
+                    <span asp-validation-for="ContactRequest.Email" class="text-danger"></span>
+                    <label asp-for="ContactRequest.Message"></label><textarea asp-for="ContactRequest.Message" rows="5"></textarea>
+                    <span asp-validation-for="ContactRequest.Message" class="text-danger"></span>
+                    <button class="btn btn-primary w-100" type="submit">Gửi yêu cầu</button>
+                </form>
+            }
+            else
+            {
+                <div class="contact-form">
+                    <h2>Quan tâm tin này?</h2>
+                    <p>Đăng nhập để lưu tin và gửi yêu cầu liên hệ an toàn.</p>
+                    <a class="btn btn-primary w-100" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Details", "Properties", new { slug = Model.Slug })">Đăng nhập để liên hệ</a>
+                </div>
+            }
+        </aside>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

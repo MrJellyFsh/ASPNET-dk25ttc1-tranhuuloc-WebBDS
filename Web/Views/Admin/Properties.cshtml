@@ -1,0 +1,4 @@
+@model IReadOnlyList<NhaTot.ViewModels.AdminPropertyModerationSummaryViewModel>
+@{ ViewData["Title"] = "Kiểm duyệt tin đăng"; }
+<section class="page-heading"><div class="container"><p class="eyebrow">QUẢN TRỊ</p><h1>Tin đăng chờ duyệt</h1></div></section>
+<section class="container agent-page">@if (TempData["SuccessMessage"] is string success) { <div class="alert alert-success">@success</div> } @if (!Model.Any()) { <p class="text-muted">Không có tin đăng nào chờ duyệt.</p> } else { <div class="table-responsive"><table class="table"><thead><tr><th>Tiêu đề</th><th>Loại</th><th>Khu vực</th><th>Giá</th><th></th></tr></thead><tbody>@foreach (var item in Model) { <tr><td>@item.Title</td><td>@item.PropertyTypeName</td><td>@item.ApproximateLocation</td><td>@item.Price.ToString("N0") VNĐ</td><td><a asp-action="PropertyDetails" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Xem</a></td></tr> }</tbody></table></div> }</section>

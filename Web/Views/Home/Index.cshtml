@@ -1,0 +1,35 @@
+@using NhaTot.Models.Enums
+@model NhaTot.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Tìm nhà đúng ý";
+}
+
+<section class="hero">
+    <div class="container hero__content">
+        <p class="eyebrow">NỀN TẢNG BẤT ĐỘNG SẢN</p>
+        <h1>Tìm một nơi đáng gọi là nhà</h1>
+        <p>Khám phá các bất động sản đã được kiểm duyệt tại những khu vực bạn quan tâm.</p>
+        <form class="hero-search" method="get" asp-controller="Properties" asp-action="Index">
+            <input name="Keyword" type="search" maxlength="120" placeholder="Nhập khu vực, dự án hoặc loại nhà" aria-label="Từ khóa tìm kiếm" />
+            <select name="Purpose" aria-label="Nhu cầu"><option value="">Mua hoặc thuê</option><option value="Sale">Cần mua</option><option value="Rent">Cần thuê</option></select>
+            <select name="ProvinceId" aria-label="Tỉnh thành"><option value="">Tất cả tỉnh thành</option>@foreach (var province in Model.Provinces) { <option value="@province.Id">@province.Name</option> }</select>
+            <button class="btn btn-primary" type="submit">Tìm bất động sản</button>
+        </form>
+    </div>
+</section>
+
+<section class="container featured-section">
+    <div class="section-title"><div><p class="eyebrow">TIN MỚI NHẤT</p><h2>Bất động sản nổi bật</h2></div><a asp-controller="Properties" asp-action="Index">Xem tất cả <span aria-hidden="true">→</span></a></div>
+    @if (!Model.IsDatabaseAvailable)
+    {
+        <div class="notice notice-warning">Dữ liệu đang tạm thời chưa sẵn sàng. Vui lòng thử lại sau.</div>
+    }
+    else if (Model.FeaturedProperties.Count == 0)
+    {
+        <div class="empty-state"><h2>Chưa có tin đăng phù hợp</h2><p>Các tin đã kiểm duyệt sẽ xuất hiện tại đây.</p><a class="btn btn-outline-primary" asp-controller="Properties" asp-action="Index">Khám phá tìm kiếm</a></div>
+    }
+    else
+    {
+        <div class="property-grid"><partial name="_PropertyCards" model="Model.FeaturedProperties" /></div>
+    }
+</section>

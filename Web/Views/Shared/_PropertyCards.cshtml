@@ -1,0 +1,30 @@
+@using NhaTot.Models.Enums
+@model IReadOnlyList<NhaTot.ViewModels.PropertyCardViewModel>
+
+@foreach (var property in Model)
+{
+    <article class="property-card">
+        <div class="property-card__image">
+            @if (!string.IsNullOrWhiteSpace(property.CoverImagePath))
+            {
+                <img src="@property.CoverImagePath" alt="@property.Title" loading="lazy" />
+            }
+            else
+            {
+                <span aria-hidden="true">⌂</span>
+            }
+            <span class="property-card__purpose">@(property.Purpose == ListingPurpose.Sale ? "Cần bán" : "Cho thuê")</span>
+        </div>
+        <div class="property-card__body">
+            <p class="property-card__price">@property.Price.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) đ</p>
+            <h3><a asp-controller="Properties" asp-action="Details" asp-route-slug="@property.Slug">@property.Title</a></h3>
+            <p class="property-card__facts">
+                @property.AreaSquareMeters.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) m²
+                @if (property.Bedrooms.HasValue) { <span>· @property.Bedrooms PN</span> }
+                @if (property.Bathrooms.HasValue) { <span>· @property.Bathrooms WC</span> }
+            </p>
+            <p class="property-card__location">@property.DistrictName, @property.ProvinceName</p>
+            <a class="property-card__link" asp-controller="Properties" asp-action="Details" asp-route-slug="@property.Slug">Xem chi tiết</a>
+        </div>
+    </article>
+}

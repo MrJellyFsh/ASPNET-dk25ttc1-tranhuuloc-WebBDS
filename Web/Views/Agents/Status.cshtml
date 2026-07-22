@@ -1,0 +1,68 @@
+@using NhaTot.Models.Enums
+@model NhaTot.ViewModels.AgentApplicationStatusViewModel
+@{
+    ViewData["Title"] = "Trạng thái hồ sơ môi giới";
+    var statusText = Model.Status switch
+    {
+        AgentApplicationStatus.PendingReview => "Đang chờ xét duyệt",
+        AgentApplicationStatus.Approved => "Đã được duyệt",
+        AgentApplicationStatus.Rejected => "Chưa được duyệt",
+        _ => "Chưa nộp hồ sơ"
+    };
+    var statusClass = Model.Status switch
+    {
+        AgentApplicationStatus.PendingReview => "status-pending",
+        AgentApplicationStatus.Approved => "status-approved",
+        AgentApplicationStatus.Rejected => "status-rejected",
+        _ => "status-none"
+    };
+}
+
+<section class="page-heading">
+    <div class="container">
+        <p class="eyebrow">HỒ SƠ MÔI GIỚI</p>
+        <h1>Trạng thái hồ sơ</h1>
+        <p>Theo dõi hồ sơ môi giới của riêng bạn tại NhàTốt.</p>
+    </div>
+</section>
+<section class="agent-page container">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success" role="status">@successMessage</div>
+    }
+    @if (TempData["InfoMessage"] is string infoMessage)
+    {
+        <div class="alert alert-info" role="status">@infoMessage</div>
+    }
+    <div class="agent-status-card">
+        <p class="eyebrow">TÌNH TRẠNG HIỆN TẠI</p>
+        <h2><span class="status-badge @statusClass">@statusText</span></h2>
+        @if (Model.SubmittedAtUtc.HasValue)
+        {
+            <p class="text-muted">Hồ sơ gần nhất được gửi lúc @Model.SubmittedAtUtc.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm").</p>
+        }
+        @if (Model.HasAgentProfile)
+        {
+            <p>Hồ sơ môi giới của bạn đã sẵn sàng.</p>
+            <dl class="agent-profile-summary">
+                <dt>Tên hiển thị</dt><dd>@Model.DisplayName</dd>
+                @if (!string.IsNullOrWhiteSpace(Model.CompanyName)) { <dt>Công ty</dt><dd>@Model.CompanyName</dd> }
+                @if (!string.IsNullOrWhiteSpace(Model.OperatingArea)) { <dt>Khu vực hoạt động</dt><dd>@Model.OperatingArea</dd> }
+            </dl>
+        }
+        else if (Model.Status == AgentApplicationStatus.PendingReview)
+        {
+            <p>NhàTốt đang xem xét hồ sơ. Bạn sẽ thấy trạng thái cập nhật tại trang này.</p>
+        }
+        else if (Model.Status == AgentApplicationStatus.Rejected)
+        {
+            <p>Bạn có thể rà soát thông tin và gửi lại một hồ sơ mới khi đã sẵn sàng.</p>
+            <a asp-action="Apply" class="btn btn-primary">Nộp lại hồ sơ</a>
+        }
+        else if (Model.Status is null)
+        {
+            <p>Bạn chưa gửi hồ sơ môi giới.</p>
+            <a asp-action="Apply" class="btn btn-primary">Đăng ký môi giới</a>
+        }
+    </div>
+</section>

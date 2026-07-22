@@ -1,0 +1,84 @@
+@using NhaTot.Models.Enums
+@model NhaTot.ViewModels.PropertySearchViewModel
+@{
+    ViewData["Title"] = "Tìm kiếm bất động sản";
+    var q = Model.Query;
+}
+
+<section class="page-heading">
+    <div class="container">
+        <p class="eyebrow">NHÀ TỐT</p>
+        <h1>Tìm bất động sản phù hợp</h1>
+        <p>Khám phá các tin đã được kiểm duyệt, thông tin rõ ràng và cập nhật.</p>
+    </div>
+</section>
+
+<div class="container search-page">
+    <form method="get" class="search-panel" aria-label="Bộ lọc tìm kiếm">
+        <div class="search-panel__main">
+            <input name="Keyword" value="@q.Keyword" type="search" maxlength="120" placeholder="Tìm theo tên dự án, khu vực..." aria-label="Từ khóa" />
+            <select name="Purpose" aria-label="Nhu cầu">
+                <option value="">Mua hoặc thuê</option>
+                <option value="Sale" selected="@(q.Purpose == ListingPurpose.Sale)">Cần mua</option>
+                <option value="Rent" selected="@(q.Purpose == ListingPurpose.Rent)">Cần thuê</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+        <div class="filter-grid">
+            <select name="ProvinceId" aria-label="Tỉnh thành">
+                <option value="">Tất cả tỉnh thành</option>
+                @foreach (var province in Model.Provinces) { <option value="@province.Id" selected="@(q.ProvinceId == province.Id)">@province.Name</option> }
+            </select>
+            <select name="DistrictId" aria-label="Quận huyện">
+                <option value="">Tất cả quận huyện</option>
+                @foreach (var district in Model.Districts) { <option value="@district.Id" selected="@(q.DistrictId == district.Id)">@district.Name</option> }
+            </select>
+            <select name="PropertyTypeId" aria-label="Loại bất động sản">
+                <option value="">Loại bất động sản</option>
+                @foreach (var type in Model.PropertyTypes) { <option value="@type.Id" selected="@(q.PropertyTypeId == type.Id)">@type.Name</option> }
+            </select>
+            <input name="MinPrice" value="@q.MinPrice" min="0" type="number" step="1000000" placeholder="Giá từ (đ)" aria-label="Giá từ" />
+            <input name="MaxPrice" value="@q.MaxPrice" min="0" type="number" step="1000000" placeholder="Giá đến (đ)" aria-label="Giá đến" />
+            <input name="MinArea" value="@q.MinArea" min="0" type="number" step="1" placeholder="Diện tích từ (m²)" aria-label="Diện tích từ" />
+            <input name="MaxArea" value="@q.MaxArea" min="0" type="number" step="1" placeholder="Diện tích đến (m²)" aria-label="Diện tích đến" />
+            <select name="Bedrooms" aria-label="Số phòng ngủ">
+                <option value="">Số phòng ngủ</option>
+                @for (var bedrooms = 1; bedrooms <= 4; bedrooms++) { <option value="@bedrooms" selected="@(q.Bedrooms == bedrooms)">@bedrooms@(bedrooms == 4 ? "+" : string.Empty) phòng ngủ</option> }
+            </select>
+        </div>
+    </form>
+
+    @if (!Model.IsDatabaseAvailable)
+    {
+        <div class="notice notice-warning">Dữ liệu đang tạm thời chưa sẵn sàng. Vui lòng thử lại sau.</div>
+    }
+    else
+    {
+        <div class="results-toolbar">
+            <p><strong>@Model.TotalCount</strong> bất động sản phù hợp</p>
+            <form method="get">
+                <input type="hidden" name="Keyword" value="@q.Keyword" /><input type="hidden" name="Purpose" value="@q.Purpose" />
+                <input type="hidden" name="ProvinceId" value="@q.ProvinceId" /><input type="hidden" name="DistrictId" value="@q.DistrictId" /><input type="hidden" name="PropertyTypeId" value="@q.PropertyTypeId" />
+                <input type="hidden" name="MinPrice" value="@q.MinPrice" /><input type="hidden" name="MaxPrice" value="@q.MaxPrice" /><input type="hidden" name="MinArea" value="@q.MinArea" /><input type="hidden" name="MaxArea" value="@q.MaxArea" /><input type="hidden" name="Bedrooms" value="@q.Bedrooms" />
+                <label> Sắp xếp <select name="Sort" onchange="this.form.submit()"><option value="newest" selected="@(q.Sort == "newest")">Mới nhất</option><option value="price-asc" selected="@(q.Sort == "price-asc")">Giá thấp đến cao</option><option value="price-desc" selected="@(q.Sort == "price-desc")">Giá cao đến thấp</option><option value="area-desc" selected="@(q.Sort == "area-desc")">Diện tích lớn nhất</option></select></label>
+            </form>
+        </div>
+        @if (Model.Properties.Count == 0)
+        {
+            <div class="empty-state"><h2>Chưa tìm thấy bất động sản phù hợp</h2><p>Hãy thử mở rộng khu vực, khoảng giá hoặc bỏ bớt điều kiện lọc.</p><a class="btn btn-outline-primary" asp-action="Index">Xóa bộ lọc</a></div>
+        }
+        else
+        {
+            <div class="property-grid"><partial name="_PropertyCards" model="Model.Properties" /></div>
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="pagination-wrap" aria-label="Phân trang">
+                    @for (var page = 1; page <= Model.TotalPages; page++)
+                    {
+                        <a class="@(page == q.Page ? "active" : string.Empty)" asp-action="Index" asp-route-Keyword="@q.Keyword" asp-route-Purpose="@q.Purpose" asp-route-ProvinceId="@q.ProvinceId" asp-route-DistrictId="@q.DistrictId" asp-route-PropertyTypeId="@q.PropertyTypeId" asp-route-MinPrice="@q.MinPrice" asp-route-MaxPrice="@q.MaxPrice" asp-route-MinArea="@q.MinArea" asp-route-MaxArea="@q.MaxArea" asp-route-Bedrooms="@q.Bedrooms" asp-route-Sort="@q.Sort" asp-route-Page="@(page)">@(page)</a>
+                    }
+                </nav>
+            }
+        }
+    }
+</div>

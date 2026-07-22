@@ -1,0 +1,18 @@
+@model NhaTot.ViewModels.SavedPropertiesViewModel
+@{ ViewData["Title"] = "Tin đã lưu"; }
+
+<section class="page-heading"><div class="container"><p class="eyebrow">CÁ NHÂN</p><h1>Tin đã lưu</h1><p>Những tin đăng công khai bạn đã lưu để xem lại sau.</p></div></section>
+<div class="container search-page">
+    @if (!Model.IsDatabaseAvailable)
+    {
+        <div class="notice notice-warning">Dữ liệu đang tạm thời chưa sẵn sàng. Vui lòng thử lại sau.</div>
+    }
+    else if (Model.Properties.Count == 0)
+    {
+        <div class="empty-state"><h2>Bạn chưa lưu tin nào</h2><p>Hãy khám phá các tin đăng phù hợp và lưu lại để xem sau.</p><a class="btn btn-primary" asp-action="Index">Tìm bất động sản</a></div>
+    }
+    else
+    {
+        <div class="property-grid"><partial name="_PropertyCards" model="Model.Properties" /></div>
+    }
+</div>

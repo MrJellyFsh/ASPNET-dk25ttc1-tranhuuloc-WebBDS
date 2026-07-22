@@ -1,0 +1,60 @@
+@model NhaTot.ViewModels.AgentApplicationInput
+@{
+    ViewData["Title"] = "Đăng ký môi giới";
+}
+
+<section class="page-heading">
+    <div class="container">
+        <p class="eyebrow">HỒ SƠ MÔI GIỚI</p>
+        <h1>Đăng ký trở thành môi giới</h1>
+        <p>Gửi thông tin cơ bản để NhàTốt xem xét hồ sơ của bạn.</p>
+    </div>
+</section>
+<section class="agent-page container">
+    <div class="agent-form">
+        <p class="text-muted">Bạn chỉ có thể có một hồ sơ đang chờ xét duyệt tại một thời điểm.</p>
+        <form method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="FullName"></label>
+                    <input asp-for="FullName" class="form-control" autocomplete="name" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="PhoneNumber"></label>
+                    <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CompanyName"></label>
+                    <input asp-for="CompanyName" class="form-control" autocomplete="organization" />
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="OperatingArea"></label>
+                    <input asp-for="OperatingArea" class="form-control" placeholder="Ví dụ: Quận 1, TP. Hồ Chí Minh" />
+                    <span asp-validation-for="OperatingArea" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="YearsOfExperience"></label>
+                    <input asp-for="YearsOfExperience" class="form-control" min="0" max="80" />
+                    <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Introduction"></label>
+                    <textarea asp-for="Introduction" class="form-control" rows="6" placeholder="Chia sẻ ngắn về kinh nghiệm và chuyên môn của bạn."></textarea>
+                    <span asp-validation-for="Introduction" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Gửi hồ sơ</button>
+                <a asp-action="Status" class="btn btn-outline-primary">Xem trạng thái</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
